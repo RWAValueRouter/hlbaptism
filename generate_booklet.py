@@ -79,6 +79,43 @@ def draw_rainbow(c, cx, y, scale=1):
     c.restoreState()
 
 
+def draw_leaf(c, x, y, angle, size=1, color=HexColor("#739B78")):
+    c.saveState()
+    c.translate(x, y)
+    c.rotate(angle)
+    c.setFillColor(color)
+    path = c.beginPath()
+    path.moveTo(0, 0)
+    path.curveTo(8 * size, 3 * size, 12 * size, 12 * size, 1 * size, 18 * size)
+    path.curveTo(-7 * size, 11 * size, -6 * size, 4 * size, 0, 0)
+    path.close()
+    c.drawPath(path, fill=1, stroke=0)
+    c.setStrokeColor(Color(1, 1, 1, alpha=.42))
+    c.setLineWidth(.45)
+    c.line(0, 2 * size, 1 * size, 14 * size)
+    c.restoreState()
+
+
+def draw_leaf_branch(c, x, y, height, mirror=False):
+    direction = -1 if mirror else 1
+    c.saveState()
+    c.setStrokeColor(HexColor("#6E9575"))
+    c.setLineWidth(1.4)
+    path = c.beginPath()
+    path.moveTo(x, y)
+    path.curveTo(x + 12 * direction, y + height * .30,
+                 x - 8 * direction, y + height * .70,
+                 x + 7 * direction, y + height)
+    c.drawPath(path, fill=0, stroke=1)
+    leaves = [(.12, 18), (.25, -22), (.39, 24), (.54, -20), (.70, 22), (.84, -18)]
+    greens = [HexColor("#86A989"), HexColor("#6F9878"), HexColor("#9BB89A")]
+    for idx, (fraction, angle) in enumerate(leaves):
+        yy = y + height * fraction
+        xx = x + (7 if idx % 2 == 0 else -4) * direction
+        draw_leaf(c, xx, yy, angle * direction, .78, greens[idx % len(greens)])
+    c.restoreState()
+
+
 def footer(c, page_num):
     c.setStrokeColor(Color(0.13, 0.31, 0.36, alpha=0.15))
     c.setLineWidth(0.5)
@@ -90,30 +127,51 @@ def footer(c, page_num):
 
 
 def page_cover(c):
-    fit_image(c, PHOTO, 0, 0, W, H)
-    c.saveState()
-    c.setFillColor(Color(0.03, 0.14, 0.17, alpha=0.20))
+    c.setFillColor(WHITE)
     c.rect(0, 0, W, H, fill=1, stroke=0)
-    c.setFillColor(Color(1, 1, 1, alpha=0.94))
-    c.roundRect(38, 40, W - 76, 220, 24, fill=1, stroke=0)
+
     c.setFillColor(BLUE_DARK)
-    c.setFont(SANS, 8.5)
-    c.drawCentredString(W / 2, 226, "WITH JOYFUL HEARTS, WE CELEBRATE")
+    c.setFont(SANS, 8.2)
+    c.drawCentredString(W / 2, H - 58, "WITH JOYFUL HEARTS, WE CELEBRATE")
     c.setFillColor(CORAL)
-    c.setFont(SERIF_ITALIC, 25)
-    c.drawCentredString(W / 2, 190, "Haolin Luo's")
+    c.setFont(SERIF_ITALIC, 24)
+    c.drawCentredString(W / 2, H - 94, "Haolin Luo's")
     c.setFillColor(INK)
-    c.setFont(SERIF, 43)
-    c.drawCentredString(W / 2, 145, "Baptism")
+    c.setFont(SERIF, 40)
+    c.drawCentredString(W / 2, H - 136, "Baptism")
+
+    photo_w, photo_h = 260, 340
+    photo_x, photo_y = (W - photo_w) / 2, 248
+    c.setFillColor(CREAM)
+    c.roundRect(photo_x - 10, photo_y - 10, photo_w + 20, photo_h + 20, 18, fill=1, stroke=0)
+    c.setStrokeColor(HexColor("#C9DCCB"))
+    c.setLineWidth(1.2)
+    c.roundRect(photo_x - 5, photo_y - 5, photo_w + 10, photo_h + 10, 14, fill=0, stroke=1)
+
+    c.saveState()
+    clip = c.beginPath()
+    clip.roundRect(photo_x, photo_y, photo_w, photo_h, 10)
+    c.clipPath(clip, stroke=0, fill=0)
+    fit_image(c, PHOTO, photo_x, photo_y, photo_w, photo_h)
+    c.restoreState()
+
+    draw_leaf_branch(c, photo_x - 18, photo_y - 8, 150, mirror=True)
+    draw_leaf_branch(c, photo_x + photo_w + 18, photo_y + 185, 150, mirror=False)
+    draw_leaf_branch(c, photo_x + 8, photo_y + photo_h - 32, 94, mirror=True)
+    draw_leaf_branch(c, photo_x + photo_w - 5, photo_y - 30, 96, mirror=False)
+    draw_leaf(c, photo_x - 2, photo_y + photo_h + 4, -55, .9, HexColor("#B4C9A8"))
+    draw_leaf(c, photo_x + photo_w + 3, photo_y - 2, 120, .9, HexColor("#B4C9A8"))
+
     c.setStrokeColor(BLUE)
     c.setLineWidth(1)
-    c.line(178, 119, W - 178, 119)
-    c.setFont(SANS, 11)
-    c.drawCentredString(W / 2, 92, "SUNDAY  -  JULY 26, 2026  -  5:00 PM")
-    c.setFont(SANS, 7.3)
+    c.line(184, 208, W - 184, 208)
+    c.setFillColor(INK)
+    c.setFont(SANS, 10.5)
+    c.drawCentredString(W / 2, 179, "SUNDAY  -  JULY 26, 2026  -  5:00 PM")
     c.setFillColor(MUTED)
-    c.drawCentredString(W / 2, 66, "THE CHURCH OF JESUS CHRIST OF LATTER-DAY SAINTS")
-    c.restoreState()
+    c.setFont(SANS, 7.1)
+    c.drawCentredString(W / 2, 148, "THE CHURCH OF JESUS CHRIST OF LATTER-DAY SAINTS")
+    draw_rainbow(c, W / 2, 101, .42)
     c.showPage()
 
 
@@ -121,6 +179,7 @@ PROGRAM = [
     ("Presiding", "Bishop Esplin"),
     ("Witnesses", "Suzi Mageno & Kaitlin Felsted"),
     ("Pianist", "Stephen Jones"),
+    ("Chorister", "Lindsey Darley"),
     ("Opening Song", "When I Am Baptized"),
     ("Opening Prayer", "Suzi Mageno"),
     ("Talk on Baptism", "Stephen Jones"),
@@ -151,7 +210,7 @@ def page_program(c):
     top = H - 166
     col_w = 246
     gap = 34
-    row_h = 86
+    row_h = 73
     for idx, (role, name) in enumerate(PROGRAM):
         col = idx % 2
         row = idx // 2
@@ -273,30 +332,25 @@ def verse(c, number, lines, x, y, width, leading=21, size=11.5):
 def page_song_one(c):
     song_header(c, "Opening song", "When I Am Baptized", "Words and music by Nita Dale Milner", BLUE_SOFT)
     draw_rainbow(c, W - 85, H - 80, .62)
-    y = H - 195
+    y = H - 190
     for number, lines in WHEN_BAPTIZED:
-        y = verse(c, number, lines, 54, y, W - 108, leading=27, size=14)
+        y = verse(c, number, lines, 42, y, W - 84, leading=44, size=20)
         if number == "1":
             c.setStrokeColor(Color(0.13, 0.31, 0.36, alpha=0.12))
-            c.line(94, y + 7, W - 54, y + 7)
-            y -= 13
-    c.setFillColor(BLUE_SOFT)
-    c.roundRect(54, 67, W - 108, 48, 18, fill=1, stroke=0)
-    c.setFillColor(BLUE_DARK)
-    c.setFont(SERIF_ITALIC, 12)
-    c.drawCentredString(W / 2, 86, "I want to be the best I can and live with God again.")
+            c.line(82, y + 8, W - 42, y + 8)
+            y -= 18
     footer(c, 3)
     c.showPage()
 
 
 def draw_chorus(c, x, y, width):
     c.setFillColor(CORAL_SOFT)
-    c.roundRect(x, y - 130, width, 138, 16, fill=1, stroke=0)
+    c.roundRect(x, y - 154, width, 162, 16, fill=1, stroke=0)
     c.setFillColor(CORAL)
     c.setFont(SANS, 7)
     c.drawString(x + 18, y - 15, "CHORUS")
-    style = ParagraphStyle("chorus", fontName=SERIF_ITALIC, fontSize=10.2,
-                           leading=18, textColor=INK, alignment=TA_CENTER)
+    style = ParagraphStyle("chorus", fontName=SERIF_ITALIC, fontSize=12.4,
+                           leading=21.5, textColor=INK, alignment=TA_CENTER)
     p = Paragraph("<br/>".join(CHORUS), style)
     _, ph = p.wrap(width - 30, 120)
     p.drawOn(c, x + 15, y - 27 - ph)
@@ -305,11 +359,11 @@ def draw_chorus(c, x, y, width):
 def page_song_two(c):
     song_header(c, "Closing song", "Holding Hands Around the World",
                 "Words and music by Janice Kapp Perry", CORAL_SOFT)
-    col_w = (W - 108) / 2
-    top = H - 190
-    verse(c, "1", HOLDING_HANDS[0][1], 42, top, col_w, leading=17.3, size=9.8)
-    verse(c, "2", HOLDING_HANDS[1][1], 66 + col_w, top, col_w, leading=17.3, size=9.8)
-    draw_chorus(c, 54, 230, W - 108)
+    col_w = (W - 72) / 2
+    top = H - 185
+    verse(c, "1", HOLDING_HANDS[0][1], 24, top, col_w, leading=20.5, size=11.5)
+    verse(c, "2", HOLDING_HANDS[1][1], 48 + col_w, top, col_w, leading=20.5, size=11.5)
+    draw_chorus(c, 42, 220, W - 84)
     footer(c, 4)
     c.showPage()
 
