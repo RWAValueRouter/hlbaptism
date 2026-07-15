@@ -177,7 +177,7 @@ def page_cover(c):
 
 PROGRAM = [
     ("Presiding", "Bishop Esplin"),
-    ("Witnesses", "Suzi Mageno & Kaitlin Felsted"),
+    ("Witnesses", "Sherrie Hill & Jeff Hill"),
     ("Pianist", "Stephen Jones"),
     ("Chorister", "Lindsey Darley"),
     ("Opening Song", "When I Am Baptized"),
