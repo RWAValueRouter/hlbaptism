@@ -13,7 +13,7 @@ from reportlab.platypus import Paragraph
 
 ROOT = Path(__file__).resolve().parent
 OUTPUT = ROOT / "output" / "pdf" / "haolin-baptism-program-booklet.pdf"
-PHOTO = ROOT / "photos" / "IMG_9193.jpg"
+PHOTO = ROOT / "photos" / "IMG_0240.jpg"
 W, H = letter
 
 INK = HexColor("#163944")
@@ -140,8 +140,8 @@ def page_cover(c):
     c.setFont(SERIF, 40)
     c.drawCentredString(W / 2, H - 136, "Baptism")
 
-    photo_w, photo_h = 260, 340
-    photo_x, photo_y = (W - photo_w) / 2, 248
+    photo_w, photo_h = 360, 270
+    photo_x, photo_y = (W - photo_w) / 2, 292
     c.setFillColor(CREAM)
     c.roundRect(photo_x - 10, photo_y - 10, photo_w + 20, photo_h + 20, 18, fill=1, stroke=0)
     c.setStrokeColor(HexColor("#C9DCCB"))
